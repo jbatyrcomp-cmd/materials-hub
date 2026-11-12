@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "katex/dist/katex.min.css";
+
+@layer base {
+  :root {
+    --background: 0 0% 99%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 215 20% 95%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 215 20% 95%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 215 20% 94%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 224 35% 7%;
+    --foreground: 213 31% 91%;
+    --card: 224 30% 10%;
+    --card-foreground: 213 31% 91%;
+    --popover: 224 30% 10%;
+    --popover-foreground: 213 31% 91%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 223 25% 16%;
+    --secondary-foreground: 213 31% 91%;
+    --muted: 223 25% 15%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 223 25% 17%;
+    --accent-foreground: 213 31% 91%;
+    --destructive: 0 63% 45%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 223 24% 18%;
+    --input: 223 24% 18%;
+    --ring: 217 91% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+.markdown-body h1 {
+  @apply text-2xl font-bold mt-4 mb-3 tracking-tight;
+}
+.markdown-body h2 {
+  @apply text-xl font-semibold mt-4 mb-2 tracking-tight;
+}
+.markdown-body h3 {
+  @apply text-lg font-semibold mt-3 mb-2;
+}
+.markdown-body p {
+  @apply my-2 leading-relaxed;
+}
+.markdown-body ul {
+  @apply list-disc pl-6 my-2 space-y-1;
+}
+.markdown-body ol {
+  @apply list-decimal pl-6 my-2 space-y-1;
+}
+.markdown-body code {
+  @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono;
+}
+.markdown-body pre {
+  @apply bg-muted p-4 rounded-lg overflow-x-auto my-3 text-sm;
+}
+.markdown-body pre code {
+  @apply bg-transparent p-0;
+}
+.markdown-body blockquote {
+  @apply border-l-4 border-primary/50 pl-4 italic text-muted-foreground my-3;
+}
+.markdown-body table {
+  @apply w-full border-collapse my-3 text-sm;
+}
+.markdown-body th,
+.markdown-body td {
+  @apply border border-border px-3 py-2 text-left;
+}
+.markdown-body th {
+  @apply bg-muted font-semibold;
+}
+
