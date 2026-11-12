@@ -9,6 +9,10 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  webpack(config) {
+    config.resolve.alias["@"] = path.join(__dirname, "src");
+    return config;
+  },
   async headers() {
     return [
       {
@@ -25,4 +29,3 @@ const nextConfig = {
 };
 
 export default nextConfig;
-
