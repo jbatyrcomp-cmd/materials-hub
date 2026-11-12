@@ -21,41 +21,53 @@ export async function uploadFileSmart(
   versionNumber?: number
 ): Promise<SmartUploadResult> {
   const mimeType = file.type || "application/octet-stream";
-  const presignRes = await fetch("/api/uploads/presign", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      fileName: file.name,
-      mimeType,
-      fileSize: file.size,
-      materialId,
-      versionNumber,
-    }),
-  });
+  try {
+    const presignRes = await fetch("/api/uploads/presign", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fileName: file.name,
+        mimeType,
+        fileSize: file.size,
+        materialId,
+        versionNumber,
+      }),
+    });
 
-  const presignData = await presignRes.json();
-  if (!presignRes.ok) {
-    throw new Error(presignData.error || "Failed to initialize file upload");
+    if (presignRes.ok) {
+      const presignData = await presignRes.json();
+      if (presignData.mode === "s3" && presignData.uploadUrl && presignData.fileKey) {
+        try {
+          const putRes = await fetch(presignData.uploadUrl, {
+            method: "PUT",
+            headers: {
+              "Content-Type": mimeType,
+            },
+            body: file,
+          });
+          if (putRes.ok) {
+            return {
+              mode: "s3",
+              fileKey: presignData.fileKey,
+              fileName: file.name,
+              mimeType,
+              fileSize: file.size,
+            };
+          }
+        } catch (putErr) {
+          console.warn("Direct S3 PUT failed, checking fallback:", putErr);
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("Presign request failed, checking fallback:", err);
   }
 
-  if (presignData.mode === "s3" && presignData.uploadUrl && presignData.fileKey) {
-    const putRes = await fetch(presignData.uploadUrl, {
-      method: "PUT",
-      headers: {
-        "Content-Type": mimeType,
-      },
-      body: file,
-    });
-    if (!putRes.ok) {
-      throw new Error("Direct cloud storage upload failed");
-    }
-    return {
-      mode: "s3",
-      fileKey: presignData.fileKey,
-      fileName: file.name,
-      mimeType,
-      fileSize: file.size,
-    };
+  // Fallback to server route (works up to 4.5MB on Vercel)
+  if (file.size > 4.5 * 1024 * 1024) {
+    throw new Error(
+      "Cloud storage upload failed and file exceeds 4.5 MB serverless limit"
+    );
   }
 
   return { mode: "local" };

@@ -61,8 +61,14 @@ function resolveSafeLocalPath(key: string): string {
 }
 
 function createS3Client(): { client: S3Client; bucket: string } {
-  const bucket = process.env.S3_BUCKET;
-  const endpoint = process.env.S3_ENDPOINT;
+  let bucket = process.env.S3_BUCKET || "materials-hub";
+  if (bucket === "materials") {
+    bucket = "materials-hub";
+  }
+  let endpoint = process.env.S3_ENDPOINT;
+  if (endpoint && endpoint.includes(".storage.supabase.co")) {
+    endpoint = endpoint.replace(".storage.supabase.co", ".supabase.co");
+  }
   const accessKeyId = process.env.S3_ACCESS_KEY_ID;
   const secretAccessKey = process.env.S3_SECRET_ACCESS_KEY;
 
@@ -71,7 +77,7 @@ function createS3Client(): { client: S3Client; bucket: string } {
   }
 
   const client = new S3Client({
-    region: process.env.S3_REGION || "auto",
+    region: process.env.S3_REGION || "ap-south-1",
     endpoint: endpoint || undefined,
     credentials: {
       accessKeyId,

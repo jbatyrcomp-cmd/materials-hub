@@ -231,7 +231,7 @@ export function MaterialsBrowser({
 
       const data = await res.json();
       if (!res.ok) {
-        setFormError(data.error || "Error creating material");
+        setFormError(data.error || "Material yaratishda xatolik yuz berdi");
         return;
       }
 
@@ -243,6 +243,10 @@ export function MaterialsBrowser({
       setNewNote("");
       setNewFile(null);
       await loadMaterials();
+    } catch (err: unknown) {
+      setFormError(
+        err instanceof Error ? err.message : "Material yuklashda xatolik yuz berdi"
+      );
     } finally {
       setSubmitting(false);
     }

@@ -179,9 +179,15 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const storageKey = buildStorageKey(material.id, 1, file.name);
-      await saveUploadedFile(storageKey, buffer, file.type || "application/octet-stream");
+      let storageKey = "";
+      try {
+        const buffer = Buffer.from(await file.arrayBuffer());
+        storageKey = buildStorageKey(material.id, 1, file.name);
+        await saveUploadedFile(storageKey, buffer, file.type || "application/octet-stream");
+      } catch (uploadErr) {
+        await prisma.material.delete({ where: { id: material.id } }).catch(() => {});
+        throw uploadErr;
+      }
 
       await prisma.$transaction(async (tx) => {
         await tx.materialVersion.create({
